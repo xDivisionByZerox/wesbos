@@ -64,7 +64,7 @@ _Note: you should never modify code that is inside your `node-modules` because i
 
 Now, let's go ahead and install the following packages;
 
-- faker
+- @faker-js
 - date-fns
 - await-to-js
 - lodash
@@ -73,7 +73,7 @@ Now, let's go ahead and install the following packages;
 To install multiple packages in the same command, you just put a space between them, like so 👇
 
 ```sh
-npm i faker date-fns await-to-js lodash axios
+npm i @faker-js date-fns await-to-js lodash axios
 ```
 
 Those are all regular dependencies so there is no need to add `--save-dev` on the end.
@@ -121,10 +121,10 @@ Modify the `packages.json` file to include a start command, and a browserslist p
     "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
+    "@faker-js": "^9.2.0",
     "await-to-js": "^2.1.1",
     "axios": "^0.19.2",
     "date-fns": "^2.14.0",
-    "faker": "^4.1.0",
     "lodash": "^4.17.15"
   },
   "browserslist": ["last 1 chrome versions"]
@@ -199,9 +199,9 @@ Even something as small as a little function that we could write over and over, 
 
 That is why Wes made this package, because he uses it quite a bit.
 
-### faker npm package
+### Faker npm package
 
-Next we will look at `faker`.
+Next we will look at [`faker`](https://fakerjs.dev/).
 
 ![npm package faker](./1283.png)
 
@@ -215,32 +215,32 @@ How it works is you import `faker` and then call different methods on it to gene
 
 That is useful for siutations like when you are writing tests and you want to fill those tests with a bunch of fake data.
 
-Let's start by importing it `import faker from 'faker';`.
+Let's start by importing it `import { faker } from '@faker-js/faker';`.
 
 ## CommonJS Syntax vs ECMA Script Modules import
 
 Sometimes in the docs you will see something like
 
 ```js
-var faker = require("faker");
+var { faker } = require("@faker-js/faker");
 ```
 
 What does that mean?
 
-That is the older node.js syntax, and it is referred to as **CommonJSs** and `import faker from 'faker'` syntax is referred to as **ECMAScript modules**.
+That is the older node.js syntax, and it is referred to as **CommonJSs** and `import { faker } from '@faker-js/faker'` syntax is referred to as **ECMAScript modules**.
 
 Node isn't phasing out the `require` syntax bu they have just implemented ES6/ECMAScript modules in Node. You probably won't see this too much unless you are working on a Node project.
 
-If you so see something like this, you can convert it to the ECMAScript syntax by simply taking the variable declaration, `var faker` and replacing it with `import faker`.
+If you so see something like this, you can convert it to the ECMAScript syntax by simply taking the variable declaration, `var { faker }` and replacing it with `import @faker-js/faker`.
 
-Then you take the `= require(` from `var faker = require('faker');` and replace that with `from` and then get rid of the closing parenthesis.
+Then you take the `= require(` from `var { faker } = require('@faker-js/faker');` and replace that with `from` and then get rid of the closing parenthesis.
 
 Import it in our `index.js` file and then log `faker` so we can see what we are working with.
 
 ```js
 // index.js
 import wait from "waait";
-import faker from "faker";
+import { faker } from "@faker-js/faker";
 
 console.log(faker);
 
@@ -262,27 +262,27 @@ Let's try to generate a fake first and last name.
 ```js
 // index.js
 import wait from "waait";
-import faker from "faker";
+import { faker } from "@faker-js/faker";
 
-console.log(`Hello ${faker.name.firstName()}`);
+console.log(`Hello ${faker.person.firstName()}`);
 ```
 
 ![generating a random firstName with faker and logging on console](./1286.png)
 
 Every time you refresh the page, you should see a different first name logged in the console because the code will give you a fake name each time.
 
-Let's try just importing the `name` subset from faker.
+Let's try just importing the `person` subset from faker.
 
 Modify the import like so 👇
 
 ```js
-import { name } from "faker";
+import { faker: { person } } from "@faker-js/faker";
 ```
 
 Modify the log like so 👇
 
 ```js
-console.log(`Hello ${name.firstName()}`);
+console.log(`Hello ${person.firstName()}`);
 ```
 
 There is lot of fake data that you can generate using faker, not just names.
@@ -292,7 +292,15 @@ For example, if we wanted to generate an array of 10 fakes, how would we do that
 We could do it using `Array.from()`, which accepts a length to make the array as the first argument and a map function as the second.
 
 ```js
-const fakeNames = Array.from({ length: 10 }, name.firstName);
+const fakeNames = Array.from({ length: 10 }, () => person.firstName());
+
+console.log(fakeNames);
+```
+
+Faker also provides their own method to make this process more easy if you want to generate an array with a random length.
+
+```js
+const fakeNames = faker.helpers.multiple(() => person.firstName(), { count: { min: 5, max: 15 } });
 
 console.log(fakeNames);
 ```
@@ -305,7 +313,13 @@ const fakeNames = Array.from({ length: 10 },
 );
 ```
 
-![generating an array of firstName and lastName with faker and logging on console](./1287.png)
+Alternativly, you might want to use Faker directly for this job as well.
+
+```js
+const fakeNames = Array.from({ length: 10 }, () => person.fullName());
+```
+
+![generating an array of firstName and lastName with Faker and logging on console](./1287.png)
 
 You should see something similar to the screenshot above 👆in your console.
 
